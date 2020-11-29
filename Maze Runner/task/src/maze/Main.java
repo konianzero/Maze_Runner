@@ -1,7 +1,10 @@
 package maze;
 
+import maze.model.Maze;
+
 public class Main {
     public static void main(String[] args) {
-        System.out.println("Hello World!");
+        Maze maze = new Maze();
+        System.out.println(maze);
     }
 }
