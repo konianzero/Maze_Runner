@@ -1,42 +1,64 @@
 package maze.model;
 
+import maze.model.algorithm.PrimMST;
+import maze.model.graph.CellState;
+import maze.model.graph.Graph;
+import maze.model.graph.Vertex;
+
 import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
-public class Maze {
-    private static final String LS = "\n";
-    private static final String EMPTY = "  ";
-    private static final String WALL = "\u2588\u2588";
+public class Maze extends Graph {
 
-    private static final int SIZE = 10;
+    private PrimMST mstAlg;
 
-    private int[][] maze = new int[][] {
-            {1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-            {0, 0, 1, 0, 1, 0, 1, 0, 0, 1},
-            {1, 0, 1, 0, 0, 0, 1, 0, 1, 1},
-            {1, 0, 0, 0, 1, 1, 1, 0, 0, 0},
-            {1, 0, 1, 0, 0, 0, 0, 0, 1, 1},
-            {1, 0, 1, 0, 1, 1, 1, 0, 1, 1},
-            {1, 0, 1, 0, 1, 0, 0, 0, 1, 1},
-            {1, 0, 1, 0, 1, 1, 1, 0, 1, 1},
-            {1, 0, 1, 0, 0, 0, 1, 0, 0, 1},
-            {1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
-    };
+    public Maze() {
+    }
+
+    public Maze initMaze(int height, int width) {
+        initGraph(height, width);
+        return this;
+    }
+
+    public Maze setMSTAlgorithm(PrimMST mstAlgorithm) {
+        this.mstAlg = mstAlgorithm;
+        return this;
+    }
+
+    public Maze generate() {
+        mstAlg.computeMST(this);
+        addEntrance();
+        addExit();
+        return this;
+    }
+
+    private void addEntrance() {
+        openRandomBorder(0);
+    }
+
+    private void addExit() {
+        openRandomBorder(width - 1);
+    }
+
+    private void openRandomBorder(int col) {
+        List<Integer> list =IntStream.iterate(1, i -> i < height - 1, i -> i + 2)
+                                     .mapToObj(row -> ((Vertex) cells[row][col]).getName())
+                                     .collect(Collectors.toList());
+
+        int i = RND.nextInt(list.size());
+        getVertex(list.get(i)).setState(CellState.EMPTY);
+    }
 
     @Override
     public String toString() {
-        StringBuilder builder = new StringBuilder();
-        Arrays.stream(maze)
-              .forEach(row -> {
-                          IntStream.range(0, SIZE)
-                                   .forEach(i -> builder.append(getSymbols(row[i])));
-                          builder.append(LS);
-                      }
-              );
-        return builder.toString();
-    }
-
-    private String getSymbols(int i) {
-        return i == 0 ? EMPTY : WALL;
+        return Arrays.stream(cells)
+                     .map(row -> Stream.of(row)
+                                  .map(e -> e.getState().getSymbol())
+                                  .collect(Collectors.joining())
+                     )
+                     .collect(Collectors.joining("\n"));
     }
 }

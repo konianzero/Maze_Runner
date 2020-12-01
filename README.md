@@ -5,3 +5,4 @@ __Hard__:
 
 - Maze Runner
     - Display a maze
+    - Maze generator
