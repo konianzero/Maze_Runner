@@ -2,7 +2,9 @@ package maze.model.graph;
 
 import maze.model.algorithm.Path;
 
-public class Cell extends Path {
+import java.io.Serializable;
+
+public class Cell extends Path implements Serializable {
     private CellState state;
 
     public Cell() {

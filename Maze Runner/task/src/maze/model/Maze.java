@@ -13,10 +13,14 @@ import java.util.stream.Stream;
 
 public class Maze extends Graph {
 
-    private PrimMST mstAlg;
+    private transient PrimMST mstAlg;
 
     public Maze() {
     }
+
+//    public void initMaze(List<String> lines) {
+//        initFromString(lines);
+//    }
 
     public Maze initMaze(int height, int width) {
         initGraph(height, width);
@@ -61,4 +65,10 @@ public class Maze extends Graph {
                      )
                      .collect(Collectors.joining("\n"));
     }
+
+//    public String toFile() {
+//        return toString()
+//                         .replace(CellState.EMPTY.getSymbol(), "0")
+//                         .replace(CellState.WALL.getSymbol(), "1");
+//    }
 }
