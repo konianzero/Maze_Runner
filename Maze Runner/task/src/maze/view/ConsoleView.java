@@ -87,7 +87,7 @@ public class ConsoleView {
     }
 
     private void findEscape() {
-
+        controller.findPath();
     }
 
     private void saveMaze() {

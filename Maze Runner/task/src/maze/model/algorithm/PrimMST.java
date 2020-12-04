@@ -1,8 +1,6 @@
 package maze.model.algorithm;
 
-import maze.model.graph.Cell;
-import maze.model.graph.Edge;
-import maze.model.graph.Graph;
+import maze.model.graph.*;
 
 import java.util.*;
 import java.util.stream.StreamSupport;
@@ -11,7 +9,7 @@ import java.util.stream.StreamSupport;
  * @see <a href="https://algs4.cs.princeton.edu/43mst/LazyPrimMST.java.html">CS Princeton - LazyPrimMST.java</a>
  */
 public class PrimMST {
-//    private Deque<Cell> mst;  // Cells in the MST
+    private Deque<Cell> mst;    // Cells in the MST
     private boolean[] marked;   // marked[v] = true iff v on tree
     private Queue<Edge> pq;     // edges with one endpoint in tree
 
@@ -21,16 +19,19 @@ public class PrimMST {
      * Compute a minimum spanning tree
      * @param G the graph
      */
-    public void computeMST(Graph G) {
-//        mst = new ArrayDeque<>();
+    public Deque<Cell> findMST(Graph G) {
+        mst = new ArrayDeque<>();
         pq = new PriorityQueue<>(Edge::compareTo);
-        marked = new boolean[G.getNumberOfVertices()];
+        marked = new boolean[G.numOfVertices()];
 
         // run Prim from all vertices to
-        Arrays.stream(G.verticesNames())        // names is just numbers
+        Arrays.stream(G.vertices())             // names is just numbers
+              .filter(v -> v.getState() != CellState.BORDER)
+              .map(Vertex::getName)
               .forEach(v -> {
                   if (!marked[v]) prim(G, v);   // get a minimum spanning tree
               });
+        return mst;
     }
 
     // run Prim's algorithm
@@ -62,7 +63,8 @@ public class PrimMST {
     }
 
     private void addToMST(Cell c) {
-//        mst.offer(c);
-        c.toMst();
+        if (c.getState() == CellState.BORDER) return;
+        mst.offer(c);
+        c.toMST();
     }
 }

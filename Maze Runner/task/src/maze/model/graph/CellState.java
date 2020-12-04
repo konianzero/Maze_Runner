@@ -2,6 +2,7 @@ package maze.model.graph;
 
 public enum CellState {
     EMPTY ("  "),
+    PATH ("//"),
     WALL ("\u2588\u2588"),
     BORDER (WALL.symbol);
 

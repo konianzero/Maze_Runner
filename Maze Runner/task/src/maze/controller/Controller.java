@@ -1,13 +1,11 @@
 package maze.controller;
 
 import maze.model.Maze;
+import maze.model.algorithm.BFP;
 import maze.model.algorithm.PrimMST;
 import maze.view.ConsoleView;
 
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.List;
 
 public class Controller {
     private ConsoleView view;
@@ -25,8 +23,9 @@ public class Controller {
         PrimMST primMST = new PrimMST();
 
         maze.initMaze(height, width)
-            .setMSTAlgorithm(primMST)
-            .generate();
+            .setMSTAlgorithm(primMST);
+
+        maze.generate();
 
         view.refresh(maze.toString());
     }
@@ -34,25 +33,6 @@ public class Controller {
     public void showMaze() {
         view.refresh(maze.toString());
     }
-
-//    public void loadMaze(String pathToFile) {
-//        List<String> lines = null;
-//        try {
-//            lines = Files.readAllLines(Path.of(pathToFile));
-//        } catch (IOException ioe) {
-//            ioe.printStackTrace();
-//        }
-//        maze.initMaze(lines);
-////        view.refresh(maze.toString());
-//    }
-//
-//    public void saveMaze(String pathToFile) {
-//        try {
-//            Files.writeString(Path.of(pathToFile), maze.toFile());
-//        } catch (IOException ioe) {
-//            ioe.printStackTrace();
-//        }
-//    }
 
     public void saveMaze(String pathToFile) {
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(pathToFile))) {
@@ -74,5 +54,14 @@ public class Controller {
         } catch (ClassNotFoundException cnfe) {
             cnfe.printStackTrace();
         }
+    }
+
+    public void findPath() {
+        BFP bfp = new BFP();
+
+        maze.setSPAlgorithm(bfp)
+            .findPath();
+
+        view.refresh(maze.toString());
     }
 }

@@ -10,26 +10,27 @@ public class Graph implements Serializable {
     private static final int MAX_WEIGHT = 10;
     protected static final Random RND = new Random();
 
-    protected transient int width;
-    protected transient int height;
-    protected transient int V;
-    protected transient int E;
+    protected int width;
+    protected int height;
+    protected int V;
+    protected int E;
 
-    protected transient Deque<Edge>[] adjacency;
-    protected transient List<Vertex> vertices;
+    protected List<Vertex> vertices;
+    protected List<Edge> edges;
+    protected Deque<Edge>[] adjacency;
     protected Cell[][] cells;
 
     public Graph() {
     }
 
-    public int getNumberOfVertices() {
+    public int numOfVertices() {
         return V;
     }
 
-    public int[] verticesNames() {
-        return vertices.stream()
-                       .mapToInt(Vertex::getName)
-                       .toArray();
+    public int size() { return width * height; }
+
+    public Vertex[] vertices() {
+        return vertices.toArray(Vertex[]::new);
     }
 
     public Iterable<Edge> adjacency(int v) {
@@ -51,12 +52,14 @@ public class Graph implements Serializable {
 
         adjacency = new ArrayDeque[this.width * this.height];
         vertices = new ArrayList<>();
+        edges = new ArrayList<>();
         cells = new Cell[this.height][this.width];
 
         initBoard();
     }
 
     private void initBoard() {
+        RND.setSeed(System.currentTimeMillis());
         createVertices();
         createEdges();
     }
@@ -67,7 +70,7 @@ public class Graph implements Serializable {
      * <p>
      * Example for 6 x 6 maze:
      * <pre>
-     * B - BORDER
+     * B - BORDER (Vertex with state = BORDER)
      * V - VERTEX
      * . - Empty
      *
@@ -141,7 +144,7 @@ public class Graph implements Serializable {
      * <p>
      * Example for 6 x 6 maze:
      * <pre>
-     * B - BORDER
+     * B - BORDER (Vertex with state = BORDER)
      * V - VERTEX
      * E - EDGE
      * C - CELL (not in use)
@@ -195,91 +198,10 @@ public class Graph implements Serializable {
         Edge e = new Edge(from, to, RND.nextInt(MAX_WEIGHT));
 
         cells[row][col] = e;
+        edges.add(e);
         adjacency[from].offer(e);
         adjacency[to].offer(e);
         E++;
         return e;
     }
-
-//    protected void initFromString(List<String> lines) {
-//        V = 0;
-//        E = 0;
-//
-//        this.height = lines.size();
-//        this.width = lines.get(0).length();
-//
-//        adjacency = new ArrayDeque[this.width * this.height];
-//        vertices = new ArrayList<>();
-//        cells = new Cell[this.height][this.width];
-//
-//        IntStream.range(0, height)
-//                .forEach(row -> {
-//                    String[] line = lines.get(row).split("");
-//
-//                    IntStream.range(0, width)
-//                            .forEach(col -> {
-//                                Vertex v;
-//                                CellState state = WALL;
-//                                if (line[col].equals("0")) {
-//                                    state = EMPTY;
-//                                }
-//
-//                                if (isHorizontalBorder(col) || isVerticalBorder(row)) {
-//                                    v = createVertex(row, col);
-//                                    if (state == EMPTY) {
-//                                        v.setState(state);
-//                                        v.toMst();
-//                                    } else {
-//                                        v.setState(BORDER);
-//                                    }
-//                                } else if (isOdd(col)) {
-//                                    if (isOdd(row)) {
-//                                        v = createVertex(row, col);
-//                                        v.setState(state);
-//                                        if (state == EMPTY) {
-//                                            v.toMst();
-//                                        }
-//                                    }
-//                                }
-//                            });
-//                });
-//
-//        IntStream.range(1, height - 1)
-//                .forEach(row -> {
-//                    String[] line = lines.get(row).split("");
-//
-//                    IntStream.range(1, width - 1)
-//                            .forEach(col -> {
-//                                Edge e;
-//                                CellState state = WALL;
-//                                if (line[col].equals("0")) {
-//                                    state = EMPTY;
-//                                }
-//
-//                                if (isOdd(col)) {
-//                                    if (isOdd(row)) return;
-//
-//                                    int from = ((Vertex) cells[row - 1][col]).getName();
-//                                    int to = ((Vertex) cells[row + 1][col]).getName();
-//                                    e = createEdge(from, to, row, col);
-//                                    e.setState(state);
-//                                    if (state == EMPTY) {
-//                                        e.toMst();
-//                                    }
-//                                } else { // is Even column
-//                                    if (isOdd(row)) {
-//                                        int from = ((Vertex) cells[row][col - 1]).getName();
-//                                        int to = ((Vertex) cells[row][col + 1]).getName();
-//                                        e = createEdge(from, to, row, col);
-//                                        if (state == EMPTY) {
-//                                            e.toMst();
-//                                        }
-//                                    } else {
-//                                        Cell c = createCell(row, col);
-//                                        c.setState(state);
-//                                    }
-//                                }
-//                            });
-//                });
-//    }
 }
